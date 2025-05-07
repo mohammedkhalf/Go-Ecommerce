@@ -11,3 +11,5 @@ func RemoveItem() gin.HandlerFunc {}
 func GetItemFromCart() gin.HandlerFunc {}
 
 func BuyFromCart() gin.HandlerFunc {}
+
+func InstanceBuy() {}
