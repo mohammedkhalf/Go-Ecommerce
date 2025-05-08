@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"Ecommerce/models"
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -35,7 +36,7 @@ func SignUp() gin.HandlerFunc {
 
 		count, err := UserCollection.countDocuments(ctx, bson.M{"email": user.Email})
 		if err != nil {
-			log.Panic(err)
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
@@ -48,7 +49,7 @@ func SignUp() gin.HandlerFunc {
 
 		defer cancel()
 		if err != nil {
-			log.Panic(err)
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
@@ -116,19 +117,17 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		token, refershToken, _ := generate.TokenGenerator(*foundUser.Email, *foundUser.FirstName, *foundUser.LastName, foundUser.UserId)
+		token, refreshToken, _ := generate.TokenGenerator(*foundUser.Email, *foundUser.FirstName, *foundUser.LastName, foundUser.UserId)
 
 		defer cancel()
-		generate.UpdateAllToken(token, refershToken, foundUser.UserId)
+		generate.UpdateAllToken(token, refreshToken, foundUser.UserId)
 		c.JSON(http.StatusFound, foundUser)
 	}
+
 }
 
-func AddProduct() gin.HandlerFunc {
-}
+func AddProduct() gin.HandlerFunc {}
 
-func ViewProduct() gin.HandlerFunc {
-}
+func ViewProduct() gin.HandlerFunc {}
 
-func SearchProduct() gin.HandlerFunc {
-}
+func SearchProduct() gin.HandlerFunc {}
