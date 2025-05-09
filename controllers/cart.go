@@ -67,7 +67,6 @@ func (app *Application) AddToCart() gin.Handler {
 
 }
 
-// RemoveItem Remove Item from Cart
 func (app *Application) RemoveItem() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
@@ -109,10 +108,8 @@ func (app *Application) RemoveItem() gin.HandlerFunc {
 
 }
 
-// GetItemFromCart get Item from Cart
 func GetItemFromCart() gin.HandlerFunc {}
 
-// BuyFromCart Buy Item/s from Cart
 func (app *Application) BuyFromCart() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
