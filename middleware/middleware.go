@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"Ecommerce/tokens"
+	token "Ecommerce/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -15,7 +15,7 @@ func Authentication() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		claims, err := tokens.ValidateToken(ClientToken)
+		claims, err := token.ValidateToken(ClientToken)
 		if err != "" {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			c.Abort()
