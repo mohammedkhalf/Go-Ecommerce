@@ -6,6 +6,7 @@ import (
 	"errors"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
 )
 
@@ -51,7 +52,24 @@ func AddProductToCart(ctx context.Context, prodCollection, userCollection *mongo
 	return nil
 }
 
-func RemoveCartItem() {}
+func RemoveCartItem(ctx context.Context, prodCollection, userCollection *mongo.Collection, productID primitive.ObjectID, userID string) error {
+
+	id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println(err)
+		return ErrUserIdIsNotValid
+	}
+
+	filter := bson.D(primitive.E{Key: "_id", Value: id})
+	update := bson.M{"$pull": bson.M{"userCart": bson.M{"_id": productID}}}
+
+	_, err = UpdateMany(ctx, filter, update)
+
+	if err != nil {
+		return ErrCantRemoveItemFromCart
+	}
+	return nil
+}
 
 func BuyItemFromCart() {}
 
