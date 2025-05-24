@@ -17,12 +17,12 @@ func main() {
 		port = "8000"
 	}
 
-	app := controllers.newApplication(database.productData(database.client, "Product"), database.userData(database.client, "Users"))
+	app := controllers.NewApplication(database.ProductData(database.Client, "Product"), database.UserData(database.Client, "Users"))
+
 	router := gin.New()
 	router.Use(gin.Logger())
-
 	routes.UserRoutes(router)
-	router.use(middleware.authentication())
+	router.Use(middleware.Authentication())
 
 	// routes need auth
 	router.GET("/add-to-cart", app.AddToCart())

@@ -2,12 +2,9 @@ package tokens
 
 import (
 	"Ecommerce/database"
-	"github.com/dgrijalva/jwt-go"
-	jwt "github.com/form3tech-oss/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"golang.org/x/net/context"
 	"log"
 	"os"
@@ -61,7 +58,7 @@ func TokenGenerator(email string, firstName string, lastName string, uid string)
 
 func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 
-	token, err := jwt.ParseWithClaims(signedtoken, &SignedDetails{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(signedToken, &SignedDetails{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(SECRET_KEY), nil
 	})
 
@@ -98,10 +95,7 @@ func UpdateAllTokens(signedToken string, signedRefreshToken string, userId strin
 
 	filter := bson.M{"user_id": userId}
 	update := bson.D{{Key: "$set", Value: updateObj}}
-	upsert := true
-	opts := options.UpdateOptions{Upsert: &upsert}
-
-	_, err := UserData.UpdateOne(ctx, filter, update, &opts)
+	_, err := UserData.UpdateOne(ctx, filter, update)
 	if err != nil {
 		log.Panic(err)
 	}
