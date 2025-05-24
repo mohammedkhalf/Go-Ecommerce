@@ -5,11 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// general routes
+// UserRoutes general routes
 func UserRoutes(request *gin.Engine) {
-	request.POST("/user/signup", controllers.SignUp())
+	request.POST("/users/signup", controllers.SignUp())
 	request.POST("/users/login", controllers.Login())
-	request.POST("/admin/add-product", controllers.AddProduct())
-	request.GET("/users/product-view", controllers.ViewProduct())
-	request.POST("/users/search", controllers.SearchProduct())
+	request.POST("/admin/add-product", controllers.ProductViewerAdmin())
+	request.GET("/users/product-view", controllers.SearchProduct())
+	request.POST("/users/search", controllers.SearchProductByQuery())
 }

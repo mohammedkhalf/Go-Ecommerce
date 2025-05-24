@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"log"
 	"net/http"
@@ -19,14 +19,14 @@ type Application struct {
 	userCollection    *mongo.Collection
 }
 
-func newApplication(productCollection *mongo.Collection, userCollection *mongo.Collection) *Application {
+func NewApplication(productCollection *mongo.Collection, userCollection *mongo.Collection) *Application {
 	return &Application{
 		productCollection: productCollection,
 		userCollection:    userCollection,
 	}
 }
 
-func (app *Application) AddToCart() gin.Handler {
+func (app *Application) AddToCart() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var productQueryID = c.Query("productID")
 		if productQueryID == "" {
@@ -97,19 +97,20 @@ func GetItemFromCart() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		userObjectID, _ = primitive.ObjectIDFromHex(userId)
+
+		_, userObjectID := primitive.ObjectIDFromHex(userId)
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 		var filledCart models.User
-		err := UserCollection.FindOne(ctx, bson.D{primitive.E{Key: "_id", Value: userObjectID}}).Decode(&filledCart)
+		err := UserCollection.FindOne(ctx, bson.D{bson.E(primitive.E{Key: "_id", Value: userObjectID})}).Decode(&filledCart)
 		if err != nil {
 			log.Println(err)
 			c.IndentedJSON(http.StatusNotFound, "Item not found")
 			return
 		}
-		filterMatch := bson.D{{Key: "$match", Value: bson.D{primitive.E{Key: "_id", Value: userObjectID}}}}
-		unWind := bson.D{{Key: "$unwind", Value: bson.D{primitive.E{Key: "path", Value: "$userCart"}}}}
-		grouping := bson.D{{Key: "$group", Value: bson.D{primitive.E{Key: "_id", Value: "$_id"}, {Key: "total", Value: bson.D{primitive.E{Key: "$sum", Value: "$userCart.price"}}}}}}
+		filterMatch := bson.D{{Key: "$match", Value: bson.D{bson.E(primitive.E{Key: "_id", Value: userObjectID})}}}
+		unWind := bson.D{{Key: "$unwind", Value: bson.D{bson.E(primitive.E{Key: "path", Value: "$userCart"})}}}
+		grouping := bson.D{{Key: "$group", Value: bson.D{bson.E(primitive.E{Key: "_id", Value: "$_id"}), {Key: "total", Value: bson.D{bson.E(primitive.E{Key: "$sum", Value: "$userCart.price"})}}}}}
 
 		pointerCursor, err := UserCollection.Aggregate(ctx, mongo.Pipeline{filterMatch, unWind, grouping})
 		if err != nil {
