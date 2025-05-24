@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -20,7 +20,7 @@ import (
 var UserCollection *mongo.Collection = database.UserData(database.Client, "Users")
 var ProductCollection *mongo.Collection = database.ProductData(database.Client, "Products")
 
-//var Validate = validate.New()
+var Validate = validator.New()
 
 func HashPassword(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
@@ -55,11 +55,11 @@ func SignUp() gin.HandlerFunc {
 			return
 		}
 
-		//validationErr := Validate.Struct(&user)
-		//if validationErr != nil {
-		//	c.JSON(http.StatusBadRequest, gin.H{"error": validationErr})
-		//	return
-		//}
+		validationErr := Validate.Struct(&user)
+		if validationErr != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": validationErr})
+			return
+		}
 
 		count, err := UserCollection.CountDocuments(ctx, bson.M{"email": user.Email})
 		if err != nil {
